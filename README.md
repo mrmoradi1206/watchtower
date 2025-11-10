@@ -13,8 +13,6 @@ All services are configured to run together on a single Docker network for simpl
 
 ## 📁 Project Structure
 
-
-
 monitoring-stack/
 │
 ├── docker-compose.yml
@@ -27,6 +25,7 @@ monitoring-stack/
 │
 └── grafana/
 └── (data persisted in Docker volume)
+
 
 ---
 
