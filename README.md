@@ -186,13 +186,3 @@ This allows inter-service access by container name, e.g. `http://prometheus:9090
 
 ---
 
-## Author
-
-<your-name>
-GitHub: https://github.com/<your-username>
-
----
-
-## License
-
-MIT License
