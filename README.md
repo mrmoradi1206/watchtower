@@ -11,6 +11,38 @@ All services are configured to run together on a single Docker network for simpl
 
 ---
 
+## 🗺️ Architecture
+
+            ┌────────────────────────────┐
+            │        Node Exporter       │
+            │  (Host metrics: CPU, RAM)  │
+            └─────────────┬──────────────┘
+                          │
+                          ▼
+
+┌─────────────────────────────┴──────────────────────────────┐
+│ Prometheus │
+│ Collects metrics from exporters and stores time-series data│
+└─────────────┬──────────────────────────────────────────────┘
+│
+│ (sends alerts)
+▼
+┌────────────────────┐
+│ Alertmanager │
+│ Routes alerts to │
+│ Email/Slack/etc. │
+└─────────┬──────────┘
+│
+│ (visualizes metrics)
+▼
+┌────────────────────┐
+│ Grafana │
+│ Dashboards & Alerts│
+└────────────────────┘
+
+
+---
+
 ## 📁 Project Structure
 
 monitoring-stack/
@@ -73,11 +105,11 @@ Password: admin
 ⚙️ Configuration
 🔸 Prometheus
 
-Edit the main config file:
+Main config file:
 
 ./prometheus/prometheus.yml
 
-Example targets:
+Example configuration:
 
 scrape_configs:
   - job_name: "prometheus"
@@ -94,10 +126,10 @@ Configure alert routing in:
 
 ./alertmanager/alertmanager.yml
 
-You can add email, Slack, or Telegram receivers.
+You can add receivers for Email, Slack, Telegram, etc.
 📊 Grafana Setup
 
-Once Grafana is up:
+Once Grafana is running:
 
     Login at http://localhost:3000
 
@@ -107,9 +139,9 @@ Once Grafana is up:
 
         URL: http://prometheus:9090
 
-    Save and test connection
+    Click Save & Test
 
-    Import prebuilt dashboards or create your own
+    Import dashboards or create your own visualizations
 
 🧩 Docker Volumes
 
@@ -119,32 +151,34 @@ Persistent data is stored in Docker volumes:
 
     grafana-data → /var/lib/grafana
 
-To remove all data (optional cleanup):
+To clean everything (including data):
 
 docker compose down -v
 
 🧱 Network
 
-All services are connected via a custom Docker network:
+All services share a Docker network called monitoring, defined in the compose file:
 
 networks:
   monitoring:
     name: monitoring
 
-This allows inter-service communication by name (e.g. http://prometheus:9090).
+This allows inter-service access by container name, e.g. http://prometheus:9090.
 🛠️ Useful Commands
 Command	Description
-docker compose up -d	Start the stack
-docker compose down	Stop the stack
-docker compose logs -f	View logs
-docker exec -it grafana bash	Access Grafana container
-docker exec -it prometheus /bin/sh	Access Prometheus container
+docker compose up -d	Start all services
+docker compose down	Stop and remove containers
+docker compose logs -f	Stream live logs
+docker exec -it grafana bash	Enter Grafana container
+docker exec -it prometheus sh	Enter Prometheus container
 🧩 Future Improvements
 
-    Add cAdvisor or Blackbox Exporter for more metrics
+    Add cAdvisor or Blackbox Exporter for advanced metrics
 
     Configure Slack / Telegram alerts in Alertmanager
 
-    Deploy stack with Traefik / Nginx reverse proxy
-
     Secure Grafana and Prometheus with TLS
+
+    Add reverse proxy (Traefik / Nginx) for HTTPS access
+
+    Deploy on Docker Swarm / Kubernetes for scalability
